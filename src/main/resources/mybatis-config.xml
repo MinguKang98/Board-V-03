@@ -6,5 +6,8 @@
     <settings>
         <setting name="mapUnderscoreToCamelCase" value="true"/>
     </settings>
-
+    
+    <typeAliases>
+        <package name="com.study.boardv03.domain"/>
+    </typeAliases>
 </configuration>
