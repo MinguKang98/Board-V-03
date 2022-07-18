@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.study.boardv03.repository.BoardRepository">
+
+    <select id="getBoardList" resultType="Board">
+        SELECT *
+        FROM board
+    </select>
+
+    <select id="getBoardById" parameterType="int" resultType="Board">
+        SELECT *
+        FROM board
+        WHERE board_id = #{boardId}
+    </select>
+
+    <select id="getTotalBoardCountBySearchCriteria" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM board
+
+        <where>
+            <if test=" createdDateFrom != null and createdDateFrom != '' ">
+                <if test=" createdDateTo != null and createdDateTo != '' ">
+                    (DATE(created_date) BETWEEN #{createdDateFrom} AND #{createdDateTo})
+                </if>
+            </if>
+
+            <if test=" categoryId != null and categoryId != 0 ">
+                AND category_id = #{categoryId}
+            </if>
+
+            <if test=" text != null and text != '' ">
+                AND (
+                user LIKE CONCAT('%',#{text},'%')
+                OR title LIKE CONCAT('%',#{text},'%')
+                OR content LIKE CONCAT('%',#{text},'%')
+                )
+            </if>
+        </where>
+
+    </select>
+
+    <select id="getBoardListBySearchAndPagingCriteria" parameterType="map" resultType="Board">
+        SELECT B.*
+        FROM (
+            SELECT *
+            FROM board
+
+            <where>
+                <if test=" createdDateFrom != null and createdDateFrom != '' ">
+                    <if test=" createdDateTo != null and createdDateTo != '' ">
+                        AND (DATE(created_date) BETWEEN #{createdDateFrom} AND #{createdDateTo})
+                    </if>
+                </if>
+
+                <if test=" categoryId != null and categoryId != 0 ">
+                    AND category_id = #{categoryId}
+                </if>
+
+                <if test=" text != null and text != '' ">
+                    AND (
+                    user LIKE CONCAT('%',#{text},'%')
+                    OR title LIKE CONCAT('%',#{text},'%')
+                    OR content LIKE CONCAT('%',#{text},'%')
+                    )
+                </if>
+            </where>
+        ) B
+        ORDER BY board_id DESC
+        LIMIT #{rowSizePerPage} OFFSET #{firstRow}
+    </select>
+
+    <insert id="addBoard" parameterType="Board" useGeneratedKeys="true" keyProperty="boardId">
+        INSERT INTO board
+            (
+             created_date,
+             user,
+             password,
+             title,
+             content,
+             file_exist,
+             category_id
+             )
+        VALUES
+            (
+             NOW(),
+             #{user},
+             #{password},
+             #{title},
+             #{content},
+             #{fileExist},
+             #{categoryId}
+             )
+    </insert>
+
+    <delete id="deleteBoard" parameterType="int">
+        DELETE FROM board
+        WHERE board_id = #{boardId}
+    </delete>
+
+    <update id="updateBoard" parameterType="Board">
+        UPDATE board
+        <set>
+            updated_date = NOW()
+
+            <if test="user != null">
+                user = #{user},
+            </if>
+
+            <if test="title != null">
+                title = #{title},
+            </if>
+
+            <if test="content != null">
+                content = #{content},
+            </if>
+
+            <if test="fileExist != null">
+                file_exist = #{fileExist},
+            </if>
+        </set>
+
+        WHERE board_id = #{boardId}
+    </update>
+
+    <update id="updateCommentCount" parameterType="int">
+        UPDATE board
+        SET comment_count = comment_count + 1
+        WHERE board_id = #{boardId}
+    </update>
+
+    <update id="updateVisitCount" parameterType="int">
+        UPDATE board
+        SET visit_count = visit_count + 1
+        WHERE board_id = #{boardId}
+    </update>
+
+</mapper>
