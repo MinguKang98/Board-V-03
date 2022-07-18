@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.study.boardv03.repository.FileRepository">
+
+    <select id="getFileListByBoardId" parameterType="int" resultType="File">
+        SELECT *
+        FROM file
+        WHERE board_id = #{boardId}
+    </select>
+
+    <select id="getFileById" parameterType="int" resultType="File">
+        SELECT *
+        FROM file
+        WHERE file_id = #{fileId}
+    </select>
+
+    <insert id="addFile" parameterType="File" useGeneratedKeys="true" keyProperty="fileId">
+        INSERT INTO file
+            (
+             origin_name,
+             system_name,
+             board_id
+             )
+        VALUES
+            (
+             #{originName},
+             #{systemName},
+             #{boardId}
+             )
+    </insert>
+
+    <delete id="deleteFile" parameterType="int">
+        DELETE FROM file
+        WHERE file_id = #{fileId}
+    </delete>
+
+</mapper>
