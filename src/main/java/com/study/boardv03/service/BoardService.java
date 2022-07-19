@@ -6,6 +6,7 @@ import com.study.boardv03.domain.Board;
 import com.study.boardv03.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,12 +16,15 @@ import java.util.List;
  */
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BoardService {
 
     private final BoardRepository boardRepository;
 
     /**
+     * 검색 조건에 해당하는 Board의 총 갯수를 return 한다.
+     *
      * @param searchCriteria : 검색 조건
      * @return 검색 조건을 만족하는 Board의 총 갯수
      */
@@ -33,9 +37,11 @@ public class BoardService {
     }
 
     /**
+     * 검색 조건과 페이징 조건을 만족하는 Board들을 포함하는 List를 return 한다.
+     *
      * @param searchCriteria : 검색 조건
      * @param pagingCriteria : 페이징 조건
-     * @return 검색 조건과 페이징 조건을 만족하는 Board의 List
+     * @return 검색 조건과 페이징 조건을 만족하는 Board들을 포함하는 List
      */
     public List<Board> getBoardListBySearchCriteriaAndPagingCriteria(SearchCriteria searchCriteria,
                                                                      PagingCriteria pagingCriteria) {
@@ -50,9 +56,19 @@ public class BoardService {
         return boardList;
     }
 
-    //TODO getBoardById
+    /**
+     * 입력받은 boardId를 가지는 Board를 return 한다.
+     *
+     * @param boardId : return할 Board의 boardId
+     * @return 해당 boardId를 가지는 Board의 인스턴스
+     */
+    public Board getBoardById(int boardId) {
 
-    //TODO addBoard
+        Board board = boardRepository.getBoardById(boardId);
+        return board;
+    }
+
+    //TODO addBoard (file도 upload)
 
     //TODO deleteBoard
 
