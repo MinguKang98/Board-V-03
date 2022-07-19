@@ -1,6 +1,7 @@
 package com.study.boardv03.controller;
 
 import com.study.boardv03.controller.dto.BoardWriteDto;
+import com.study.boardv03.controller.dto.FileDto;
 import com.study.boardv03.criteria.PagingCriteria;
 import com.study.boardv03.criteria.SearchCriteria;
 import com.study.boardv03.domain.Board;
@@ -12,11 +13,17 @@ import com.study.boardv03.service.CategoryService;
 import com.study.boardv03.service.CommentService;
 import com.study.boardv03.service.FileService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * /board 로 시작하는 요청을 처리하는 클래스
@@ -31,6 +38,9 @@ public class BoardController {
     private final CategoryService categoryService;
     private final CommentService commentService;
     private final FileService fileService;
+
+    @Value("${file.download-location}")
+    private String DOWNLOAD_DIR;
 
     /**
      *
@@ -107,9 +117,46 @@ public class BoardController {
         return "write";
     }
 
-    //TODO 게시글-작성 처리
+    /**
+     * @param fileDto : 업로드한 파일들이 담긴 객체
+     * @param boardWriteDto : Board 등록을 위해 입력한 필드들이 들어간 객체
+     * @param model
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping(value = "/write", method = RequestMethod.POST)
+    public String boardSave(FileDto fileDto, BoardWriteDto boardWriteDto, Model model) throws IOException {
+
+        Board board = boardWriteDto.toBoard();
+        board.setFileExist(fileDto.isFileExist());
+
+        List<MultipartFile> multipartFileList = fileDto.getFileList();
+        List<File> fileList = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFileList) {
+            if (!multipartFile.isEmpty()) {
+                String originFileName = multipartFile.getOriginalFilename();
+                String fileExtension = FilenameUtils.getExtension(originFileName).toLowerCase();
+                String systemFileName = UUID.randomUUID().toString() + "." + fileExtension;
+
+                // 업로드
+                java.io.File uploadFile = new java.io.File(DOWNLOAD_DIR + "/" + systemFileName);
+                multipartFile.transferTo(uploadFile);
+
+                File file = new File();
+                file.setOriginName(originFileName);
+                file.setSystemName(systemFileName);
+                fileList.add(file);
+            }
+        }
+
+        boardService.addBoard(board, fileList);
+
+        return "redirect:/board/list";
+    }
 
     //TODO 게시글-수정
+
+    //TODO 게시글-수정 처리
 
     //TODO 게시글-삭제
 }
