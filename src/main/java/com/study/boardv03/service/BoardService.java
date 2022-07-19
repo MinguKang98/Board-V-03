@@ -3,7 +3,9 @@ package com.study.boardv03.service;
 import com.study.boardv03.criteria.PagingCriteria;
 import com.study.boardv03.criteria.SearchCriteria;
 import com.study.boardv03.domain.Board;
+import com.study.boardv03.domain.File;
 import com.study.boardv03.repository.BoardRepository;
+import com.study.boardv03.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final FileRepository fileRepository;
 
     /**
      * 검색 조건에 해당하는 Board의 총 갯수를 return 한다.
@@ -68,7 +71,25 @@ public class BoardService {
         return board;
     }
 
-    //TODO addBoard (file도 upload)
+    /**
+     * Board와 File들을 추가한다.
+     *
+     * @param board : 추가할 Board
+     * @param fileList : 추가할 File의 List
+     */
+    @Transactional
+    public void addBoard(Board board, List<File> fileList) {
+        // insert board
+        boardRepository.addBoard(board);
+        int boardId = board.getBoardId();
+
+        // insert file
+        for (File file : fileList) {
+            file.setBoardId(boardId);
+            fileRepository.addFile(file);
+        }
+
+    }
 
     //TODO deleteBoard
 
@@ -81,6 +102,7 @@ public class BoardService {
      *
      * @param boardId : update할 Board의 boardId
      */
+    @Transactional
     public void updateVisitCount(int boardId) {
 
         boardRepository.updateVisitCount(boardId);
