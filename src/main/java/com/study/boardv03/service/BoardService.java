@@ -76,6 +76,14 @@ public class BoardService {
 
     //TODO updateCommentCount
 
-    //TODO updateVisitCount
+    /**
+     * 입력받은 boardId를 가지는 Board의 visitCount를 1 중가시킨다.
+     *
+     * @param boardId : update할 Board의 boardId
+     */
+    public void updateVisitCount(int boardId) {
+
+        boardRepository.updateVisitCount(boardId);
+    }
 
 }
