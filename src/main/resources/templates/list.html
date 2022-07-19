@@ -71,7 +71,8 @@
             <td th:if="${board.getFileExist() == true}"><i class="fas fa-paperclip"></i></td>
             <td th:unless="${board.getFileExist() == true}"></td>
             <td>
-                <a th:href="@{/board/write(curPage=1, createdDateFrom=${searchCriteria.getCreatedDateFrom()}, createdDateTo=${searchCriteria.getCreatedDateTo()},
+                <a th:href="@{/board/view/{boardId}(boardId=${board.getBoardId()}, curPage=${pagingCriteria.getCurPage()},
+                    createdDateFrom=${searchCriteria.getCreatedDateFrom()}, createdDateTo=${searchCriteria.getCreatedDateTo()},
                     categoryId=${searchCriteria.getCategoryId()}, text=${searchCriteria.getText()})}">
                     <span th:text="|${board.getTitle()} (${board.getCommentCount()})|"></span>
                 </a>
@@ -80,7 +81,7 @@
             <td th:text="${board.getVisitCount()}"></td>
             <td th:text="${board.getCreatedDate()}"></td>
             <td th:if="${board.getUpdatedDate()} == null" th:text="'-'"></td>
-            <td th:if="${board.getUpdatedDate()} == null" th:text="${board.getUpdatedDate()}"></td>
+            <td th:unless="${board.getUpdatedDate()} == null" th:text="${board.getUpdatedDate()}"></td>
         </tr>
         </tbody>
     </table>
