@@ -14,13 +14,13 @@ public class BoardWriteDto {
     private String content;
     private int categoryId;
 
-    public static Board toBoard(BoardWriteDto boardWriteDto) {
+    public Board toBoard() {
         Board board = new Board();
-        board.setUser(boardWriteDto.getUser());
-        board.setPassword(boardWriteDto.getPassword());
-        board.setTitle(boardWriteDto.getTitle());
-        board.setContent(boardWriteDto.getContent());
-        board.setCategoryId(boardWriteDto.getCategoryId());
+        board.setUser(this.getUser());
+        board.setPassword(this.getPassword());
+        board.setTitle(this.getTitle());
+        board.setContent(this.getContent());
+        board.setCategoryId(this.getCategoryId());
 
         return board;
     }
