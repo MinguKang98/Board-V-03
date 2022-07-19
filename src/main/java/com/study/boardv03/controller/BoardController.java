@@ -40,9 +40,9 @@ public class BoardController {
      * @return
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public String boardList( @RequestParam(value = "curPage", defaultValue = "1") int curPage,
-                             @ModelAttribute SearchCriteria searchCriteria,
-                             Model model ) {
+    public String boardListView(@RequestParam(value = "curPage", defaultValue = "1") int curPage,
+                                @ModelAttribute SearchCriteria searchCriteria,
+                                Model model ) {
 
         int totalBoardCount = boardService.getTotalBoardCountBySearchCriteria(searchCriteria);
         PagingCriteria pagingCriteria = new PagingCriteria(curPage, totalBoardCount);
@@ -62,7 +62,6 @@ public class BoardController {
 
     /**
      *
-     *
      * @param boardId : Baord의 boardId
      * @param curPage : 목록에서의 현재 페이지
      * @param searchCriteria : 목록에서의 검색 조건
@@ -80,6 +79,8 @@ public class BoardController {
         List<Comment> commentList = commentService.getCommentListByBoardId(boardId);
         List<File> fileList = fileService.getFileListByBoardId(boardId);
 
+        boardService.updateVisitCount(boardId);
+
         model.addAttribute("searchCriteria", searchCriteria);
         model.addAttribute("curPage", curPage);
         model.addAttribute("board", board);
@@ -90,7 +91,21 @@ public class BoardController {
         return "view";
     }
 
-    //TODO 게시글 작성
+    /**
+     *
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/write", method = RequestMethod.GET)
+    public String boardWriteView(Model model) {
+
+        List<Category> categoryList = categoryService.getCategoryList();
+
+        model.addAttribute("form", new BoardWriteDto());
+        model.addAttribute("categoryList", categoryList);
+
+        return "write";
+    }
 
     //TODO 게시글-작성 처리
 
