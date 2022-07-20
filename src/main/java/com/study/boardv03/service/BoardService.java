@@ -91,11 +91,18 @@ public class BoardService {
 
     }
 
-    //TODO deleteBoard
+    /**
+     * 입력받은 boardId를 가지는 Baord를 삭제한다.
+     *
+     * @param boardId : 삭제할 Board의 boardId
+     */
+    @Transactional
+    public void deleteBoard(int boardId) {
+
+        boardRepository.deleteBoard(boardId);
+    }
 
     //TODO updateBoard
-
-    //TODO updateCommentCount
 
     /**
      * 입력받은 boardId를 가지는 Board의 visitCount를 1 중가시킨다.
