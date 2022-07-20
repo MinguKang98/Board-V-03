@@ -1,9 +1,11 @@
 package com.study.boardv03.service;
 
 import com.study.boardv03.domain.Comment;
+import com.study.boardv03.repository.BoardRepository;
 import com.study.boardv03.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,10 +14,12 @@ import java.util.List;
  */
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final BoardRepository boardRepository;
 
     /**
      * 입력받은 boardId를 가지는 모든 Comment의 List를 return 한다.
@@ -35,10 +39,14 @@ public class CommentService {
      * @param comment : 추가할 Comment 인스턴스
      * @return 추가된 Comment의 commentId
      */
+    @Transactional
     public int addComment(Comment comment) {
 
-        int commentId = commentRepository.addComment(comment);
-        return commentId;
+        commentRepository.addComment(comment);
+
+        boardRepository.updateCommentCount(comment.getBoardId());
+
+        return comment.getCommentId();
     }
 
 }
