@@ -79,7 +79,7 @@
                     <th:block th:each="num : ${#numbers.sequence(0,2)}">
                         <div th:if="${num < fileList.size()}"  class="my-2">
                             <i class="fas fa-paperclip"></i>&nbsp;<span th:text="${fileList[num].getOriginName()}"></span>&nbsp;
-                            <button class="btn btn-secondary" type="button" onclick="location.href='@{/fileDownload/{fileId}(fileId=${fileList[num].getFileId()})}'">
+                            <button class="btn btn-secondary" type="button" th:onclick="|location.href='@{/fileDownload/{fileId}(fileId=${fileList[num].getFileId()})}'|">
                                 Download
                             </button>
                             &nbsp;
@@ -111,6 +111,7 @@
 <script>
     function validCheck() {
         var user = document.getElementById("user");
+        var password = document.getElementById("password");
         var title = document.getElementById("title");
         var content = document.getElementById("content");
 
@@ -168,7 +169,7 @@
     }
 
     function deleteFile(id){
-        document.getElementById(id).parentNode.innerHTML = "<input type=\"file\" name=\"file" + id + "\" />";
+        document.getElementById(id).parentNode.innerHTML = "<input class=\"form-control w-50\" type=\"file\" name=\"file" + id + "\" />";
     }
 </script>
 
