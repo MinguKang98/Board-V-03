@@ -20,6 +20,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ public class BoardController {
 
     @Value("${file.download-location}")
     private String DOWNLOAD_DIR;
+    private String separator = java.io.File.separator;
 
     /**
      * @param curPage        : 현재 페이지
@@ -137,7 +140,7 @@ public class BoardController {
                 String systemFileName = UUID.randomUUID().toString() + "." + fileExtension;
 
                 // 업로드
-                java.io.File uploadFile = new java.io.File(DOWNLOAD_DIR + "/" + systemFileName);
+                java.io.File uploadFile = new java.io.File(DOWNLOAD_DIR + separator + systemFileName);
                 multipartFile.transferTo(uploadFile);
 
                 File file = new File();
@@ -177,6 +180,70 @@ public class BoardController {
         model.addAttribute("fileList", fileList);
 
         return "modify";
+    }
+
+    @RequestMapping(value = "/modify/{boardId}", method = RequestMethod.POST)
+    public String boardUpdate(@PathVariable("boardId") int boardId,
+                              @RequestParam(value = "curPage", defaultValue = "1") int curPage,
+                              @ModelAttribute SearchCriteria searchCriteria,
+                              BoardModifyDto boardModifyDto,
+                              FileDto fileDto,
+                              MultipartHttpServletRequest request,
+                              RedirectAttributes redirectAttributes) throws IOException{
+
+        redirectAttributes.addAttribute("curPage", curPage);
+        redirectAttributes.addAttribute("createdDateFrom", searchCriteria.getCreatedDateFrom());
+        redirectAttributes.addAttribute("createdDateTo", searchCriteria.getCreatedDateTo());
+        redirectAttributes.addAttribute("categoryId", searchCriteria.getCategoryId());
+        redirectAttributes.addAttribute("text", searchCriteria.getText());
+
+        String originPassword = boardService.getBoardById(boardId).getPassword();
+        String inputPassword = boardModifyDto.getPassword();
+        if (!originPassword.equals(inputPassword)) {
+            return "redirect:/board/modify/" + boardId;
+        }
+
+        Board board = boardModifyDto.toBoard();
+        board.setBoardId(boardId);
+        List<File> originFileList = fileService.getFileListByBoardId(boardId);
+        List<MultipartFile> multipartFileList = fileDto.getFileList();
+
+        // 삭제된 file delete
+        List<File> deleteFileList = new ArrayList<>();
+        for (File originFile : originFileList) {
+            String fileDeleteCheck = "FILE_" + originFile.getFileId();
+            if (request.getParameter(fileDeleteCheck) == null) {
+                deleteFileList.add(originFile);
+
+                java.io.File deleteFile = new java.io.File(DOWNLOAD_DIR + separator + originFile.getSystemName());
+                deleteFile.delete();
+            }
+        }
+
+        // 추가된 file upload
+        List<File> addFileList = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFileList) {
+            if (multipartFile != null && !multipartFile.isEmpty()) {
+                String originFileName = multipartFile.getOriginalFilename();
+                String fileExtension = FilenameUtils.getExtension(originFileName).toLowerCase();
+                String systemFileName = UUID.randomUUID().toString() + "." + fileExtension;
+
+                java.io.File uploadFile = new java.io.File(DOWNLOAD_DIR + separator + systemFileName);
+                multipartFile.transferTo(uploadFile);
+
+                File addFile = new File();
+                addFile.setOriginName(originFileName);
+                addFile.setSystemName(systemFileName);
+                addFile.setBoardId(boardId);
+
+                addFileList.add(addFile);
+            }
+        }
+        
+        // update board & delete file & add file
+        boardService.updateBoard(board, addFileList, deleteFileList);
+
+        return "redirect:/board/view/" + boardId;
     }
 
 }
