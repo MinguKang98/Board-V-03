@@ -101,8 +101,6 @@
     <update id="updateBoard" parameterType="Board">
         UPDATE board
         <set>
-            updated_date = NOW()
-
             <if test="user != null">
                 user = #{user},
             </if>
@@ -118,6 +116,8 @@
             <if test="fileExist != null">
                 file_exist = #{fileExist},
             </if>
+
+            updated_date = NOW()
         </set>
 
         WHERE board_id = #{boardId}
