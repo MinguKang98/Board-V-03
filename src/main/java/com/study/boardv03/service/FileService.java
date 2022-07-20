@@ -43,8 +43,14 @@ public class FileService {
         return file;
     }
 
-    //TODO 파일 add
+    /**
+     * 입력받은 fileId를 가지는 File을 삭제한다.
+     *
+     * @param fileId : 삭제할 File의 fileId
+     */
+    public void deleteFile(int fileId) {
 
-    //TODO 파일 delete
+        fileRepository.deleteFile(fileId);
+    }
 
 }
