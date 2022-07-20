@@ -102,7 +102,54 @@ public class BoardService {
         boardRepository.deleteBoard(boardId);
     }
 
-    //TODO updateBoard
+    /**
+     * 입력받은 Board를 수정하고, 변경된 File들을 추가 및 삭제한다.
+     *
+     * @param inputBoard : 변경할 필드를 가진 Board
+     * @param addFileList : 추가할 File들의 List
+     * @param deleteFileList : 삭제할 File들의 List
+     */
+    @Transactional
+    public void updateBoard(Board inputBoard, List<File> addFileList, List<File> deleteFileList) {
+
+        int boardId = inputBoard.getBoardId();
+
+        for (File file : addFileList) {
+            fileRepository.addFile(file);
+        }
+
+        for (File file : deleteFileList) {
+            fileRepository.deleteFile(file.getFileId());
+        }
+
+        Board originBoard = boardRepository.getBoardById(boardId);
+        String originUser = originBoard.getUser();
+        String originTitle = originBoard.getTitle();
+        String originContent = originBoard.getContent();
+        boolean originFileExist = originBoard.getFileExist();
+
+        String inputUser = inputBoard.getUser();
+        String inputTitle = inputBoard.getTitle();
+        String inputContent = inputBoard.getContent();
+        boolean inputFileExist = (fileRepository.getFileListByBoardId(boardId).size() > 0);
+
+        Board newBoard = new Board();
+        newBoard.setBoardId(boardId);
+        if (!originUser.equals(inputUser)) {
+            newBoard.setUser(inputUser);
+        }
+        if (!originTitle.equals(inputTitle)) {
+            newBoard.setTitle(inputTitle);
+        }
+        if (!originContent.equals(inputContent)) {
+            newBoard.setContent(inputContent);
+        }
+        if (originFileExist != inputFileExist) {
+            newBoard.setFileExist(inputFileExist);
+        }
+
+        boardRepository.updateBoard(newBoard);
+    }
 
     /**
      * 입력받은 boardId를 가지는 Board의 visitCount를 1 중가시킨다.
