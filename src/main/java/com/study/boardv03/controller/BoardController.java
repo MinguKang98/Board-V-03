@@ -1,5 +1,6 @@
 package com.study.boardv03.controller;
 
+import com.study.boardv03.controller.dto.BoardModifyDto;
 import com.study.boardv03.controller.dto.BoardWriteDto;
 import com.study.boardv03.controller.dto.FileDto;
 import com.study.boardv03.criteria.PagingCriteria;
@@ -43,8 +44,7 @@ public class BoardController {
     private String DOWNLOAD_DIR;
 
     /**
-     *
-     * @param curPage : 현재 페이지
+     * @param curPage        : 현재 페이지
      * @param searchCriteria : 검색 조건
      * @param model
      * @return
@@ -52,7 +52,7 @@ public class BoardController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public String boardListView(@RequestParam(value = "curPage", defaultValue = "1") int curPage,
                                 @ModelAttribute SearchCriteria searchCriteria,
-                                Model model ) {
+                                Model model) {
 
         int totalBoardCount = boardService.getTotalBoardCountBySearchCriteria(searchCriteria);
         PagingCriteria pagingCriteria = new PagingCriteria(curPage, totalBoardCount);
@@ -71,18 +71,17 @@ public class BoardController {
     }
 
     /**
-     *
-     * @param boardId : Baord의 boardId
-     * @param curPage : 목록에서의 현재 페이지
+     * @param boardId        : Baord의 boardId
+     * @param curPage        : 목록에서의 현재 페이지
      * @param searchCriteria : 목록에서의 검색 조건
      * @param model
      * @return
      */
     @RequestMapping(value = "/view/{boardId}", method = RequestMethod.GET)
-    public String boardView( @PathVariable("boardId") int boardId,
-                             @RequestParam(value = "curPage", defaultValue = "1") int curPage,
-                             @ModelAttribute SearchCriteria searchCriteria,
-                             Model model) {
+    public String boardView(@PathVariable("boardId") int boardId,
+                            @RequestParam(value = "curPage", defaultValue = "1") int curPage,
+                            @ModelAttribute SearchCriteria searchCriteria,
+                            Model model) {
 
         Board board = boardService.getBoardById(boardId);
         Category category = categoryService.getCategoryById(board.getCategoryId());
@@ -102,7 +101,6 @@ public class BoardController {
     }
 
     /**
-     *
      * @param model
      * @return
      */
@@ -118,7 +116,7 @@ public class BoardController {
     }
 
     /**
-     * @param fileDto : 업로드한 파일들이 담긴 객체
+     * @param fileDto       : 업로드한 파일들이 담긴 객체
      * @param boardWriteDto : Board 등록을 위해 입력한 필드들이 들어간 객체
      * @param model
      * @return
@@ -154,9 +152,31 @@ public class BoardController {
         return "redirect:/board/list";
     }
 
-    //TODO 게시글-수정
+    /**
+     * @param boardId        : Baord의 boardId
+     * @param curPage        : 목록에서의 현재 페이지
+     * @param searchCriteria : 목록에서의 검색 조건
+     * @param model
+     * @return
+     */
+    @RequestMapping(value = "/modify/{boardId}", method = RequestMethod.GET)
+    public String boardModifyView(@PathVariable("boardId") int boardId,
+                                  @RequestParam(value = "curPage", defaultValue = "1") int curPage,
+                                  @ModelAttribute SearchCriteria searchCriteria,
+                                  Model model) {
 
-    //TODO 게시글-수정 처리
+        Board board = boardService.getBoardById(boardId);
+        Category category = categoryService.getCategoryById(board.getCategoryId());
+        List<File> fileList = fileService.getFileListByBoardId(boardId);
 
-    //TODO 게시글-삭제
+        model.addAttribute("form", new BoardModifyDto());
+        model.addAttribute("searchCriteria", searchCriteria);
+        model.addAttribute("curPage", curPage);
+        model.addAttribute("board", board);
+        model.addAttribute("category", category);
+        model.addAttribute("fileList", fileList);
+
+        return "modify";
+    }
+
 }
