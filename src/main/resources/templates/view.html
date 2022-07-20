@@ -65,13 +65,13 @@
         </div>
         <div class="col">
             <button class="btn btn-outline-dark btn-lg" type="button"
-                    onclick="location.href='passwordCheck.jsp?boardId=<%=board.getBoardId()%>&type=modify&curPage=<%=search.getCurPage()%>&searchCreatedDateFrom=<%=search.getCreatedDateFrom()%>&searchCreatedDateTo=<%=search.getCreatedDateTo()%>&searchCategoryId=<%=search.getCategoryId()%>&searchText=<%=search.getText()%>'">
+                    th:onclick="|location.href='@{/passwordCheck/{boardId}(boardId=${board.getBoardId()},type=modify,curPage=${curPage},createdDateFrom=${searchCriteria.getCreatedDateFrom()}, createdDateTo=${searchCriteria.getCreatedDateTo()},categoryId=${searchCriteria.getCategoryId()}, text=${searchCriteria.getText()})}'|">
                 수정
             </button>
         </div>
         <div class="col">
             <button class="btn btn-outline-danger btn-lg" type="button"
-                    onclick="location.href='passwordCheck.jsp?boardId=<%=board.getBoardId()%>&type=delete&curPage=<%=search.getCurPage()%>&searchCreatedDateFrom=<%=search.getCreatedDateFrom()%>&searchCreatedDateTo=<%=search.getCreatedDateTo()%>&searchCategoryId=<%=search.getCategoryId()%>&searchText=<%=search.getText()%>'">
+                    th:onclick="|location.href='@{/passwordCheck/{boardId}(boardId=${board.getBoardId()},type=delete,curPage=${curPage},createdDateFrom=${searchCriteria.getCreatedDateFrom()}, createdDateTo=${searchCriteria.getCreatedDateTo()},categoryId=${searchCriteria.getCategoryId()}, text=${searchCriteria.getText()})}'|">
                 삭제
             </button>
         </div>
