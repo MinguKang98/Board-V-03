@@ -79,7 +79,7 @@
                     <th:block th:each="num : ${#numbers.sequence(0,2)}">
                         <div th:if="${num < fileList.size()}"  class="my-2">
                             <i class="fas fa-paperclip"></i>&nbsp;<span th:text="${fileList[num].getOriginName()}"></span>&nbsp;
-                            <button class="btn btn-secondary" type="button" th:onclick="|location.href='@{/fileDownload/{fileId}(fileId=${fileList[num].getFileId()})}'|">
+                            <button class="btn btn-secondary" type="button" th:onclick="|location.href='@{/file/download/{fileId}(fileId=${fileList[num].getFileId()})}'|">
                                 Download
                             </button>
                             &nbsp;

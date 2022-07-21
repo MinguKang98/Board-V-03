@@ -32,7 +32,7 @@
     <div class="row mb-5">
         <p th:each="file:${fileList}">
             <i class="fas fa-download"></i>
-            <a th:text="${file.getOriginName()}" href="fileDownload?fileId=<%=file.getFileId()%>"></a>
+            <a th:text="${file.getOriginName()}" th:href="@{/file/download/{fileId}(fileId=${file.getFileId()})}"></a>
         </p>
     </div>
 
